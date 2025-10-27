@@ -1,0 +1,42 @@
+<#
+.SYNOPSIS
+    This PowerShell script enables the "Require a password on wakeup (plugged in)" setting
+    to comply with STIG WN11-CC-000150.
+
+.NOTES
+    Author          : Joarder Rashid
+    LinkedIn        : https://www.linkedin.com/in/joarder-rashid-8178b5292/
+    GitHub          : https://github.com/joar7160-byte
+    Date Created    : 2025-10-26
+    Last Modified   : 2025-10-26
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN11-CC-000150
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Run this script in an elevated PowerShell session (Run as Administrator).
+    Example:
+    PS C:\> .\Remediate-WN11-CC-000150.ps1
+#>
+
+# ==================== Remediation Code ====================
+
+# Registry path for power setting "Require a password on wakeup (plugged in)"
+$RegPath = "HKLM:\Software\Policies\Microsoft\Power\PowerSettings\0e796bdb-100d-47d6-a2d5-f7d2daa51f51"
+
+# Create the key if it doesn't exist
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# Set ACSettingIndex to 1 (Require password when plugged in)
+Set-ItemProperty -Path $RegPath -Name "ACSettingIndex" -Value 1 -Type DWord
+
+Write-Host "STIG WN11-CC-000150 applied successfully — Password prompt required on resume from sleep (plugged in)."
