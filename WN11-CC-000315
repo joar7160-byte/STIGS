@@ -1,0 +1,45 @@
+<#
+.SYNOPSIS
+    This PowerShell script disables the Windows Installer feature
+    “Always install with elevated privileges” to comply with STIG WN11-CC-000315.
+
+.NOTES
+    Author          : Joarder Rashid
+    LinkedIn        : https://www.linkedin.com/in/joarder-rashid-8178b5292/
+    GitHub          : https://github.com/joar7160-byte
+    Date Created    : 2025-10-26
+    Last Modified   : 2025-10-26
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN11-CC-000315
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Run this script in an elevated PowerShell session (Run as Administrator).
+    Example:
+    PS C:\> .\Remediate-WN11-CC-000315.ps1
+#>
+
+# ==================== Remediation Code ====================
+
+# Machine hive (HKLM)
+$MachineKey = "HKLM:\Software\Policies\Microsoft\Windows\Installer"
+if (-not (Test-Path $MachineKey)) {
+    New-Item -Path $MachineKey -Force | Out-Null
+}
+Set-ItemProperty -Path $MachineKey -Name "AlwaysInstallElevated" -Value 0 -Type DWord
+
+# User hive (HKCU)
+$UserKey = "HKCU:\Software\Policies\Microsoft\Windows\Installer"
+if (-not (Test-Path $UserKey)) {
+    New-Item -Path $UserKey -Force | Out-Null
+}
+Set-ItemProperty -Path $UserKey -Name "AlwaysInstallElevated" -Value 0 -Type DWord
+
+Write-Host "✅ STIG WN11-CC-000315 applied successfully — 'Always install with elevated privileges' is now DISABLED." -ForegroundColor Green
