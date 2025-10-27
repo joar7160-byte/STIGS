@@ -42,4 +42,4 @@ if (-not (Test-Path $UserKey)) {
 }
 Set-ItemProperty -Path $UserKey -Name "AlwaysInstallElevated" -Value 0 -Type DWord
 
-Write-Host "✅ STIG WN11-CC-000315 applied successfully — 'Always install with elevated privileges' is now DISABLED." -ForegroundColor Green
+Write-Host "STIG WN11-CC-000315 applied successfully — 'Always install with elevated privileges' is now DISABLED."
