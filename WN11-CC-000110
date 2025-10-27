@@ -1,0 +1,41 @@
+<#
+.SYNOPSIS
+    This PowerShell script disables printing over HTTP to comply with STIG WN11-CC-000110.
+
+.NOTES
+    Author          : Joarder Rashid
+    LinkedIn        : https://www.linkedin.com/in/joarder-rashid-8178b5292/
+    GitHub          : https://github.com/joar7160-byte
+    Date Created    : 2025-10-26
+    Last Modified   : 2025-10-26
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN11-CC-000110
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Run this script in an elevated PowerShell session (Run as Administrator).
+    Example:
+    PS C:\> .\Remediate-WN11-CC-000110.ps1
+#>
+
+# ==================== Remediation Code ====================
+
+# Registry path for disabling HTTP printing
+$RegPath = "HKLM:\Software\Policies\Microsoft\Windows NT\Printers"
+
+# Ensure the key exists
+if (-not (Test-Path $RegPath)) {
+    New-Item -Path $RegPath -Force | Out-Null
+}
+
+# Set DisableHTTPPrinting to 1 (Disable HTTP printing)
+Set-ItemProperty -Path $RegPath -Name "DisableHTTPPrinting" -Value 1 -Type DWord
+
+Write-Host "STIG WN11-CC-000110 applied successfully — Printing over HTTP is now DISABLED." -ForegroundColor Green
