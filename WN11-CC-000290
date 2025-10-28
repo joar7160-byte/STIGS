@@ -1,0 +1,53 @@
+<#
+.SYNOPSIS
+    This PowerShell script configures Remote Desktop Services to use
+    the required client connection encryption level to comply with
+    STIG WN11-CC-000290.
+
+.NOTES
+    Author          : Joarder Rashid
+    LinkedIn        : https://www.linkedin.com/in/joarder-rashid-8178b5292/
+    GitHub          : https://github.com/joar7160-byte
+    Date Created    : 2025-10-27
+    Last Modified   : 2025-10-27
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN11-CC-000290
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Run this script in an elevated PowerShell session (Run as Administrator).
+    Example:
+    PS C:\> .\Remediate-WN11-CC-000290.ps1
+#>
+
+# ==================== Remediation Code ====================
+
+# Ensure admin privileges
+$principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Error "Please run this script as Administrator."
+    exit 1
+}
+
+# Registry path for RDP encryption configuration
+$regPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services'
+if (-not (Test-Path $regPath)) {
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set encryption level to 3 (High)
+# Values:
+#   1 = Low
+#   2 = Client Compatible
+#   3 = High (required by STIG)
+#   4 = FIPS Compliant
+Set-ItemProperty -Path $regPath -Name 'MinEncryptionLevel' -Value 3 -Type DWord
+
+Write-Host "STIG WN11-CC-000290 applied successfully — RDP encryption level set to High." 
