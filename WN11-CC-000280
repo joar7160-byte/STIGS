@@ -1,0 +1,49 @@
+#
+.SYNOPSIS
+    This PowerShell script enforces the requirement that Remote Desktop Services
+    must always prompt a client for passwords upon connection
+    to comply with STIG WN11-CC-000280.
+
+.NOTES
+    Author          : Joarder Rashid
+    LinkedIn        : https://www.linkedin.com/in/joarder-rashid-8178b5292/
+    GitHub          : https://github.com/joar7160-byte
+    Date Created    : 2025-10-27
+    Last Modified   : 2025-10-27
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN11-CC-000280
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Run this script in an elevated PowerShell session (Run as Administrator).
+    Example:
+    PS C:\> .\Remediate-WN11-CC-000280.ps1
+#>
+
+# ==================== Remediation Code ====================
+
+# Ensure admin privileges
+$principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Error " Please run this script as Administrator."
+    exit 1
+}
+
+# Registry path for RDP security settings
+$regPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services'
+if (-not (Test-Path $regPath)) {
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Enable prompt for password upon connection
+# 1 = Always prompt for password upon connection
+Set-ItemProperty -Path $regPath -Name 'fPromptForPassword' -Value 1 -Type DWord
+
+Write-Host "STIG WN11-CC-000280 applied successfully — RDP will always prompt for password upon connection." 
