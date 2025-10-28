@@ -1,0 +1,49 @@
+<#
+.SYNOPSIS
+    This PowerShell script disables Digest authentication for the Windows Remote Management (WinRM) client
+    to comply with STIG WN11-CC-000360.
+
+.NOTES
+    Author          : Joarder Rashid
+    LinkedIn        : https://www.linkedin.com/in/joarder-rashid-8178b5292/
+    GitHub          : https://github.com/joar7160-byte
+    Date Created    : 2025-10-27
+    Last Modified   : 2025-10-27
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN11-CC-000360
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Run this script in an elevated PowerShell session (Run as Administrator).
+    Example:
+    PS C:\> .\Remediate-WN11-CC-000360.ps1
+#>
+
+# ==================== Remediation Code ====================
+
+# Ensure admin privileges
+$principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Error "Please run this script as Administrator."
+    exit 1
+}
+
+# Registry path for WinRM client authentication settings
+$regPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client'
+if (-not (Test-Path $regPath)) {
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Disable Digest authentication
+# 0 = Disabled
+# 1 = Enabled
+Set-ItemProperty -Path $regPath -Name 'AllowDigest' -Value 0 -Type DWord
+
+Write-Host "STIG WN11-CC-000360 applied successfully — WinRM Digest authentication is now disabled." 
