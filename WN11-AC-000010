@@ -1,0 +1,47 @@
+<#
+.SYNOPSIS
+    This PowerShell script sets the account lockout threshold to 3 invalid logon attempts
+    to comply with STIG WN11-AC-000010.
+
+.NOTES
+    Author          : Joarder Rashid
+    LinkedIn        : https://www.linkedin.com/in/joarder-rashid-8178b5292/
+    GitHub          : https://github.com/joar7160-byte
+    Date Created    : 2025-10-26
+    Last Modified   : 2025-10-26
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN11-AC-000010
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Run this script in an elevated PowerShell session (Run as Administrator).
+    Example:
+    PS C:\> .\Remediate-WN11-AC-000010.ps1
+#>
+
+# ==================== Remediation Code ====================
+
+# Check for admin rights
+$principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Error "❌ Please run this script as Administrator."
+    exit 1
+}
+
+# Set account lockout threshold to 3 attempts
+net accounts /lockoutthreshold:3 | Out-Null
+
+# Set account lockout duration to 15 minutes
+net accounts /lockoutduration:15 | Out-Null
+
+# Set lockout counter reset time to 15 minutes
+net accounts /lockoutwindow:15 | Out-Null
+
+Write-Host STIG WN11-AC-000010 applied successfully — Account lockout after 3 failed logon attempts configured. -ForegroundColor Green
