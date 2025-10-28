@@ -1,0 +1,48 @@
+<#
+.SYNOPSIS
+    This PowerShell script prevents the Web Publishing and Online Ordering wizards 
+    from downloading a list of providers to comply with STIG WN11-CC-000105.
+
+.NOTES
+    Author          : Joarder Rashid
+    LinkedIn        : https://www.linkedin.com/in/joarder-rashid-8178b5292/
+    GitHub          : https://github.com/joar7160-byte
+    Date Created    : 2025-10-27
+    Last Modified   : 2025-10-27
+    Version         : 1.0
+    CVEs            : N/A
+    Plugin IDs      : N/A
+    STIG-ID         : WN11-CC-000105
+
+.TESTED ON
+    Date(s) Tested  : 
+    Tested By       : 
+    Systems Tested  : 
+    PowerShell Ver. : 
+
+.USAGE
+    Run this script in an elevated PowerShell session (Run as Administrator).
+    Example:
+    PS C:\> .\Remediate-WN11-CC-000105.ps1
+#>
+
+# ==================== Remediation Code ====================
+
+# Ensure admin privileges
+$principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Error "Please run this script as Administrator."
+    exit 1
+}
+
+# Registry path for disabling Web Publishing and Online Ordering provider downloads
+$regPath = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+if (-not (Test-Path $regPath)) {
+    New-Item -Path $regPath -Force | Out-Null
+}
+
+# Set NoWebServices to 1 (Disable)
+# 1 = Prevent the Web Publishing and Online Ordering wizards from downloading a list of providers
+Set-ItemProperty -Path $regPath -Name 'NoWebServices' -Value 1 -Type DWord
+
+Write-Host "STIG WN11-CC-000105 applied successfully — Web Publishing and Online Ordering provider downloads are disabled." 
